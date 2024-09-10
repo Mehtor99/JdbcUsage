@@ -17,10 +17,14 @@ public class UserRepository implements ICrud<User>{
 		this.databaseHelper = new DatabaseHelper();
 	}
 	
+	public boolean existsByUserName(String username) {
+		return findAll().stream()
+		                .anyMatch(user -> user.getUsername().equals(username));
+	}
 	
 	@Override
 	public void save(User user) {
-		sql = "INSERT INTO tbluser(ad, soyad, username, password) VALUES ('%s','%s','%s','%s')"
+		sql = "INSERT INTO tbluser (ad, soyad, username, password) VALUES ('%s','%s','%s','%s')"
 				.formatted(user.getAd(), user.getSoyad(), user.getUsername(), user.getPassword());
 		databaseHelper.executeUpdate(sql);
 	}
@@ -84,5 +88,23 @@ public class UserRepository implements ICrud<User>{
 		long createat = rs.getLong("createat");
 		long updateat = rs.getLong("updateat");
 		return new User(id, ad, soyad, username, password, state, createat, updateat);
+	}
+	
+	public Optional<User> doLogin(String username, String password) {
+		sql =" SELECT * FROM tbluser WHERE username = '%s' AND password = '%s'"
+				.formatted(username, password);
+		Optional<ResultSet> resultSet = databaseHelper.executeQuery(sql);
+		try {
+			if (resultSet.isPresent()) {
+				ResultSet rs = resultSet.get();
+				if (rs.next()){
+					return Optional.of(getValueFromResultSet(rs));
+				}
+			}
+		}
+		catch (SQLException e) {
+			System.out.println("giriş sırasında hata oluştu.."+e.getMessage());
+		}
+		return Optional.empty();
 	}
 }

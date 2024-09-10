@@ -3,7 +3,8 @@ package org.mehtor._02_JDBC_Forum.repository;
 import java.sql.*;
 import java.util.Optional;
 
-import static org.mehtor._01_JDBC_ETicaret.utility.Constants.*;
+import static org.mehtor._02_JDBC_Forum.utility.Constants.*;
+
 
 public class DatabaseHelper {
 	private Connection conn;

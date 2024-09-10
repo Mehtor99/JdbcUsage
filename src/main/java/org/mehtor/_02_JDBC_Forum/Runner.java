@@ -3,6 +3,10 @@ package org.mehtor._02_JDBC_Forum;
 import org.mehtor._02_JDBC_Forum.entity.User;
 import org.mehtor._02_JDBC_Forum.repository.UserRepository;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.List;
+import java.util.Optional;
 import java.util.Scanner;
 
 public class Runner {
@@ -10,11 +14,12 @@ public class Runner {
 	static UserRepository userRepository = new UserRepository();
 	
 	public static void main(String[] args) {
-		//menu();
-		User user = new User("Mehmet","Ertop","mehtor","1234");
+		//userRepository.findAll().forEach(System.out::println);
+		menu();
+		/*User user = new User("Burak","Bilek","bb","12345");
 		userRepository.save(user);
+	*/
 	}
-	
 	private static void menu() {
 		int userInput = -1;
 		do {
@@ -23,7 +28,7 @@ public class Runner {
 			System.out.println("2- Giriş Yap");
 			System.out.println("0- Çıkış Yap");
 			System.out.print("Seçiminiz: ");
-			userInput = sc.nextInt();
+			userInput = sc.nextInt();sc.nextLine();
 			menuOptions(userInput);
 			
 		} while (userInput != 0);
@@ -37,7 +42,7 @@ public class Runner {
 				break;
 			}
 			case 2: {
-				//girisYap();
+				girisYap();
 				break;
 			}
 			case 0: {
@@ -53,27 +58,54 @@ public class Runner {
 		
 	}
 	
+	private static void girisYap() {
+		System.out.println("kullanıcı adınızı giriniz: ");
+		String username = sc.nextLine();
+		System.out.println("şifrenizi giriniz: ");
+		String password = sc.nextLine();
+		
+		Optional<User> user = userRepository.doLogin(username, password);
+		
+		if (user.isPresent()) {
+			System.out.println("Giriş başarılı hosgeldin "+user.get().getAd() + " " +user.get().getSoyad());
+		}
+		else {
+			System.out.println("Girdiğiniz bilgiler hatalı !!!");
+		}
+		
+	}
+	
 	private static void kayitOl() {
 		System.out.println("***** Kullanici Kayit Formu *****");
 		System.out.print("Adınız: ");
-		String ad = sc.nextLine();sc.next();
+		String ad = sc.nextLine();
 		System.out.print("Soyadiniz: ");
-		String soyad = sc.nextLine();sc.next();
-		getUsername();
-		System.out.println("Password giriniz: ");
+		String soyad = sc.nextLine();
+		String username = getUsername();
+		System.out.print("Password giriniz: ");
 		String password = sc.nextLine();
+		
+		User user = new User(ad,soyad,username,password);
+		userRepository.save(user);
 	}
 	
 	private static String getUsername() {
-		String username;
 		while (true) {
 			System.out.println("Username giriniz: ");
-			username = sc.nextLine();
-			if (userRepository.findAll().contains(username)){
-				System.out.println("Nu kullanıcı adı daha önce alınmış, farklı bir kullanıcı adı giriniz.");
-			}else{
-				return username;
+			String username = sc.nextLine();
+			
+			// Kullanıcı adı veritabanında var mı kontrol et
+			boolean exists = userRepository.existsByUserName(username);
+			
+			// Eğer kullanıcı adı mevcutsa uyarı ver
+			if (exists) {
+				System.out.println("Username zaten kullanılıyor, tekrar deneyiniz !!!");
+			} else {
+				return username;  // Kullanıcı adı kullanılabilir, döndür
 			}
 		}
 	}
+	
+	
+	
 }

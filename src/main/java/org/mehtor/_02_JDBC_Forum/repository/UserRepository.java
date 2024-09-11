@@ -5,27 +5,25 @@ import org.mehtor._02_JDBC_Forum.entity.User;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 public class UserRepository implements ICrud<User>{
-	private final DatabaseHelper databaseHelper;
+	
+	private static  DatabaseHelper databaseHelper;
 	private String sql;
 	
 	public UserRepository() {
 		this.databaseHelper = new DatabaseHelper();
 	}
 	
-	public boolean existsByUserName(String username) {
-		return findAll().stream()
-		                .anyMatch(user -> user.getUsername().equals(username));
-	}
-	
 	@Override
 	public void save(User user) {
-		sql = "INSERT INTO tbluser (ad, soyad, username, password) VALUES ('%s','%s','%s','%s')"
+		sql = "INSERT INTO tbluser(ad, soyad, username, password) VALUES ('%s','%s','%s','%s')"
 				.formatted(user.getAd(), user.getSoyad(), user.getUsername(), user.getPassword());
+		
 		databaseHelper.executeUpdate(sql);
 	}
 	
@@ -37,8 +35,8 @@ public class UserRepository implements ICrud<User>{
 	
 	@Override
 	public void update(User user) {
-	sql = "UPDATE tbluser SET ad='%s', soyad='%s', username='%s', password='%s' WHERE id=%d"
-			.formatted(user.getAd(), user.getSoyad(), user.getUsername(), user.getPassword(), user.getId());
+		sql = "UPDATE tbluser SET ad='%s', soyad='%s', username='%s', password='%s' WHERE id=%d"
+				.formatted(user.getAd(), user.getSoyad(), user.getUsername(), user.getPassword(), user.getId());
 		databaseHelper.executeUpdate(sql);
 	}
 	
@@ -85,8 +83,8 @@ public class UserRepository implements ICrud<User>{
 		String username = rs.getString("username");
 		String password = rs.getString("password");
 		int state=rs.getInt("state");
-		long createat = rs.getLong("createat");
-		long updateat = rs.getLong("updateat");
+		LocalDateTime createat = rs.getTimestamp("createat").toLocalDateTime();
+		LocalDateTime updateat = rs.getTimestamp("updateat").toLocalDateTime();
 		return new User(id, ad, soyad, username, password, state, createat, updateat);
 	}
 	
@@ -106,5 +104,20 @@ public class UserRepository implements ICrud<User>{
 			System.out.println("giriş sırasında hata oluştu.."+e.getMessage());
 		}
 		return Optional.empty();
+	}
+	
+	public static boolean existByUserName(String username) {
+		String sql = "SELECT * FROM tbluser WHERE username = '" + username + "'";
+		Optional<ResultSet> resultSet = databaseHelper.executeQuery(sql);
+		if (resultSet.isPresent()) {
+			try {
+				return resultSet.get().next();
+			}
+			catch (SQLException e){
+				System.out.println("existsByUserName metodu çalışırken hata oluştu.."+e.getMessage());
+			}
+		}
+		
+		return false;
 	}
 }

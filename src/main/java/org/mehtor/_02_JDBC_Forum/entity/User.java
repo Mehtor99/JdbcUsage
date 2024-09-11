@@ -1,5 +1,7 @@
 package org.mehtor._02_JDBC_Forum.entity;
 
+import java.time.LocalDateTime;
+
 public class User extends BaseEntity{
 	private int id;
 	private String ad;
@@ -25,7 +27,7 @@ public class User extends BaseEntity{
 		this.password = password;
 	}
 	
-	public User(int id, String ad, String soyad, String username, String password,Integer state,Long createat, Long updateat) {
+	public User(int id, String ad, String soyad, String username, String password,Integer state,LocalDateTime createat, LocalDateTime updateat) {
 		super(state, createat, updateat);
 		this.id = id;
 		this.ad = ad;

@@ -9,7 +9,7 @@ import java.util.Scanner;
 public class UserController {
 	static Scanner sc = new Scanner(System.in);
 	static UserRepository userRepository = new UserRepository();
-	static int activeUserId;
+	public static int activeUserId;
 	
 	public void registerUser(){
 		System.out.println("***** Kullanici Kayit Formu *****");

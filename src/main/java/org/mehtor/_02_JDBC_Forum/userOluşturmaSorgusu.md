@@ -6,9 +6,9 @@ soyad varchar(20) NOT NULL,
 username varchar(20) NOT NULL UNIQUE,
 password varchar(20) NOT NULL,
 state smallint DEFAULT 1,
-createat bigint DEFAULT EXTRACT(epoch FROM Now()),
-updateat bigint DEFAULT EXTRACT(epoch FROM Now())
-)
+createat timestamp Default NOW(),
+updateat timestamp Default NOW()
+);
 
 
 

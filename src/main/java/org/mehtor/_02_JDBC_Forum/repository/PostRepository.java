@@ -1,5 +1,6 @@
 package org.mehtor._02_JDBC_Forum.repository;
 
+import org.mehtor._02_JDBC_Forum.controller.UserController;
 import org.mehtor._02_JDBC_Forum.entity.Post;
 
 import java.sql.ResultSet;
@@ -76,13 +77,31 @@ public class PostRepository implements ICrud<Post> {
 		return Optional.empty();
 	}
 	
+	public List<Post> activeUserPostList(){
+		sql = "SELECT * FROM tblpost WHERE user_id = " + UserController.activeUserId;
+		Optional<ResultSet> resultSet = databaseHelper.executeQuery(sql);
+		List<Post> postList = new ArrayList<>();
+		try {
+			if (resultSet.isPresent()) {
+				ResultSet rs = resultSet.get();
+				while (rs.next()) {
+					postList.add(getValueFromResultSet(rs));
+				}
+			}
+		}
+		catch (SQLException e){
+			System.out.println("Postları listelerken bir hata oluştu..." + e.getMessage());
+		}
+		return postList;
+	}
+	
 	private Post getValueFromResultSet(ResultSet rs) throws SQLException {
 		int id = rs.getInt("id");
 		int user_id = rs.getInt("user_id");
 		String baslik = rs.getString("baslik");
 		String icerik = rs.getString("icerik");
 		Integer state = rs.getInt("state");
-		LocalDateTime paylasilmaTarihi = rs.getTimestamp("paylasilma_tarihi").toLocalDateTime();
+		LocalDateTime paylasilmaTarihi = rs.getTimestamp("paylasimtarihi").toLocalDateTime();
 		LocalDateTime createat = rs.getTimestamp("createat").toLocalDateTime();
 		LocalDateTime updateat = rs.getTimestamp("updateat").toLocalDateTime();
 		

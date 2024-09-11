@@ -1,6 +1,8 @@
 package org.mehtor._02_JDBC_Forum.modules;
 
 import org.mehtor._02_JDBC_Forum.controller.PostController;
+import org.mehtor._02_JDBC_Forum.repository.PostRepository;
+import org.mehtor._02_JDBC_Forum.repository.UserRepository;
 
 import java.util.Scanner;
 
@@ -34,9 +36,11 @@ public class PostMenu {
 	
 	private static void postMenuOptions(int userInput) {
 		PostController postController = new PostController();
+		PostRepository postRepository = new PostRepository();
+		UserRepository userRepository = new UserRepository();
 		switch (userInput) {
 			case 1: {
-				
+				postRepository.findAll().forEach(System.out::println);
 				break;
 			}
 			case 2: {
@@ -44,11 +48,11 @@ public class PostMenu {
 				break;
 			}
 			case 3: {
-				
+				postController.getMyPostList();
 				break;
 			}
 			case 4: {
-				
+				userRepository.findAll().forEach(System.out::println);
 				break;
 			}
 			case 0: {
